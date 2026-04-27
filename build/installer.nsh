@@ -20,9 +20,10 @@
 !macroend
 
 !macro customLicensePage
-  !define MUI_LICENSEPAGE_TEXT_TOP "Welcome to Zhike. Please review the license terms before installing."
-  !define MUI_LICENSEPAGE_TEXT_BOTTOM "Please click Agree to continue installation. If you do not agree to the above terms, click Cancel to exit."
-  !define MUI_LICENSEPAGE_BUTTON "I Agree(&A)"
+  !define MUI_LICENSEPAGE_TEXT_TOP "在安装 Zhike 之前，请检阅授权条款。"
+  !define MUI_LICENSEPAGE_TEXT_BOTTOM "检阅协议的其余部分，按 [PgDn] 往下卷动页面。"
+  !define MUI_LICENSEPAGE_BUTTON "我同意(&I)"
+  !define MUI_LICENSEPAGE_CHECKBOX_TEXT "我同意上述许可协议条款(&A)"
   !insertmacro MUI_PAGE_LICENSE "build\license.txt"
 !macroend
 
