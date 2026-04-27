@@ -1,0 +1,127 @@
+# Electron Builder 打包配置文件
+# 定义如何打包为各平台安装包(Windows .exe / macOS .dmg / Linux AppImage)
+
+appId: com.zhike.app                             # 应用唯一标识符
+productName: Zhike                               # 应用显示名称（英文，避免编码问题）
+directories:
+  buildResources: build                            # 构建资源目录(存放图标等)
+
+# 打包后钩子：macOS Ad-hoc 签名
+afterPack: ./build/afterPack.js
+
+# 打包时排除的文件/目录(使用 ! 表示排除)
+files:
+  - "!**/.vscode/*"                              # 排除 VS Code 配置
+  - "!src/*"                                     # 排除源代码(已编译到 out/)
+  - "!electron.vite.config.{js,ts,mjs,cjs}"      # 排除 Vite 配置
+  - "!{.eslintcache,eslint.config.mjs,.prettierignore,.prettierrc,CHANGELOG.md,README.md}"
+  - "!{.env,.env.*,.npmrc,pnpm-lock.yaml}"       # 排除环境变量和包管理文件
+  - "!{tsconfig.json,tsconfig.node.json,tsconfig.web.json}"  # 排除 TypeScript 配置
+
+# ASAR 解压配置：resources 目录不打包进 asar，方便外部访问
+asarUnpack:
+  - resources/**
+
+# Windows 平台配置
+win:
+  executableName: Zhike                           # 可执行文件名
+  icon: build/icon.ico                            # Windows 应用图标
+
+# NSIS 安装程序配置 - 实现类似截图的向导效果
+nsis:
+  artifactName: ${name}-${version}-setup.${ext}   # 安装包命名格式
+  shortcutName: ${productName}                     # 快捷方式名称
+  uninstallDisplayName: ${productName}             # 卸载时显示的名称
+  createDesktopShortcut: always                    # 始终创建桌面快捷方式
+  createStartMenuShortcut: true                    # 创建开始菜单快捷方式
+
+  # 安装向导界面配置
+  oneClick: false                                  # 禁用一键安装，显示向导页面
+  perMachine: false                                # 默认按用户安装
+  allowToChangeInstallationDirectory: true         # 允许用户更改安装目录
+  allowElevation: true                             # 允许提升权限
+
+  # 自定义 NSIS 脚本
+  include: build/installer.nsh                     # 包含自定义 NSIS 宏
+
+  # 安装程序图标和样式
+  installerIcon: build/icon.ico                    # 安装程序图标
+  uninstallerIcon: build/icon.ico                  # 卸载程序图标
+
+  # 安装程序显示信息
+  displayLanguageSelector: false                   # 不显示语言选择器（默认中文）
+
+  # 删除应用数据
+  deleteAppDataOnUninstall: false                  # 卸载时不删除用户数据
+
+# macOS 平台配置
+mac:
+  icon: build/icon.icns                            # macOS 应用图标
+  entitlements: build/entitlements.mac.plist       # 沙盒权限配置
+  entitlementsInherit: build/entitlements.mac.inherit.plist
+  notarize: false                                  # 关闭公证(开发阶段)
+  category: public.app-category.productivity       # App Store 分类
+  target:
+    - dmg                                          # DMG 安装包
+    - zip                                          # ZIP 压缩包（用于更新）
+
+# DMG 安装包配置 - macOS 引导式安装
+dmg:
+  artifactName: ${name}-${version}-mac.${ext}
+  # DMG 窗口标题
+  title: "Zhike Installer"
+  # 窗口大小和图标布局
+  window:
+    width: 660
+    height: 400
+  # 内容布局：左侧是应用图标，右侧是 Applications 文件夹快捷方式
+  contents:
+    - x: 180
+      y: 170
+      type: file
+      path: "${appName}.app"
+    - x: 480
+      y: 170
+      type: link
+      path: "/Applications"
+  # 背景图（可选，用于美化安装界面）
+  background: build/dmg-background.png
+  # 图标大小
+  iconSize: 80
+
+# Linux 平台配置
+linux:
+  target:
+    - AppImage                                     # 生成 AppImage 格式
+    - deb                                          # 生成 deb 安装包
+    - rpm                                          # 生成 rpm 安装包
+  maintainer: "Zhike Team"
+  category: Utility                                # 应用分类
+  # 桌面入口配置
+  desktop:
+    Name: Zhike
+    Comment: Skill Management and Agent Desktop Application
+    Categories: Utility;Productivity;
+    StartupWMClass: Zhike
+
+# AppImage 配置
+appImage:
+  artifactName: ${name}-${version}-linux.${ext}
+
+# deb 安装包配置
+deb:
+  artifactName: ${name}-${version}-linux.deb
+  # 依赖项
+  depends:
+    - gconf2
+    - gconf-service
+    - libnotify4
+    - libappindicator1
+    - libxtst6
+    - libnss3
+    - libxss1
+  # 安装前后脚本
+  afterInstall: build/deb-after-install.sh
+  afterRemove: build/deb-after-remove.sh
+
+npmRebuild: false                                  # 禁用 npm rebuild，使用预编译二进制

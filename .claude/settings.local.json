@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(gh api *)",
+      "Bash(npm config *)",
+      "Bash(powershell *)",
+      "Bash(mv electron-scaffold/.github .)",
+      "Bash(mv electron-scaffold/.claude .)"
+    ],
+    "defaultMode": "bypassPermissions"
+  }
+}

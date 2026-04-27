@@ -1,0 +1,127 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 700">
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#2563eb"/>
+    </marker>
+    <marker id="arrow-green" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#059669"/>
+    </marker>
+    <marker id="arrow-orange" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#ea580c"/>
+    </marker>
+    <marker id="arrow-purple" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#7c3aed"/>
+    </marker>
+  </defs>
+
+  <rect width="960" height="700" fill="#fafafa"/>
+  <text x="480" y="35" text-anchor="middle" font-size="22" font-weight="bold" fill="#1f2937">Electron 应用启动与 IPC 通信时序图</text>
+
+  <!-- 参与者 -->
+  <rect x="60" y="55" width="140" height="40" rx="6" fill="#dbeafe" stroke="#2563eb" stroke-width="2"/>
+  <text x="130" y="80" text-anchor="middle" font-size="13" font-weight="bold" fill="#1e40af">用户</text>
+
+  <rect x="260" y="55" width="140" height="40" rx="6" fill="#dbeafe" stroke="#2563eb" stroke-width="2"/>
+  <text x="330" y="80" text-anchor="middle" font-size="13" font-weight="bold" fill="#1e40af">操作系统</text>
+
+  <rect x="460" y="55" width="140" height="40" rx="6" fill="#fef3c7" stroke="#ea580c" stroke-width="2"/>
+  <text x="530" y="80" text-anchor="middle" font-size="13" font-weight="bold" fill="#92400e">主进程</text>
+
+  <rect x="660" y="55" width="140" height="40" rx="6" fill="#d1fae5" stroke="#059669" stroke-width="2"/>
+  <text x="730" y="80" text-anchor="middle" font-size="13" font-weight="bold" fill="#065f46">预加载脚本</text>
+
+  <rect x="860" y="55" width="80" height="40" rx="6" fill="#ede9fe" stroke="#7c3aed" stroke-width="2"/>
+  <text x="900" y="80" text-anchor="middle" font-size="13" font-weight="bold" fill="#5b21b6">渲染进程</text>
+
+  <!-- 生命线 -->
+  <line x1="130" y1="95" x2="130" y2="660" stroke="#d1d5db" stroke-width="1.5" stroke-dasharray="5,3"/>
+  <line x1="330" y1="95" x2="330" y2="660" stroke="#d1d5db" stroke-width="1.5" stroke-dasharray="5,3"/>
+  <line x1="530" y1="95" x2="530" y2="660" stroke="#d1d5db" stroke-width="1.5" stroke-dasharray="5,3"/>
+  <line x1="730" y1="95" x2="730" y2="660" stroke="#d1d5db" stroke-width="1.5" stroke-dasharray="5,3"/>
+  <line x1="900" y1="95" x2="900" y2="660" stroke="#d1d5db" stroke-width="1.5" stroke-dasharray="5,3"/>
+
+  <!-- 激活条 -->
+  <rect x="520" y="130" width="20" height="80" fill="#2563eb" opacity="0.3"/>
+  <rect x="720" y="190" width="20" height="40" fill="#ea580c" opacity="0.3"/>
+  <rect x="890" y="230" width="20" height="60" fill="#7c3aed" opacity="0.3"/>
+  <rect x="520" y="320" width="20" height="60" fill="#2563eb" opacity="0.3"/>
+  <rect x="890" y="340" width="20" height="40" fill="#7c3aed" opacity="0.3"/>
+  <rect x="520" y="440" width="20" height="80" fill="#2563eb" opacity="0.3"/>
+  <rect x="890" y="460" width="20" height="40" fill="#7c3aed" opacity="0.3"/>
+
+  <!-- 消息 1: 用户启动应用 -->
+  <line x1="130" y1="120" x2="330" y2="120" stroke="#2563eb" stroke-width="2" marker-end="url(#arrow)"/>
+  <rect x="200" y="108" width="80" height="16" fill="#fafafa" opacity="0.95"/>
+  <text x="240" y="120" text-anchor="middle" font-size="10" fill="#2563eb">双击启动应用</text>
+
+  <!-- 消息 2: OS 加载主进程 -->
+  <line x1="330" y1="150" x2="520" y2="150" stroke="#2563eb" stroke-width="2" marker-end="url(#arrow)"/>
+  <rect x="390" y="138" width="100" height="16" fill="#fafafa" opacity="0.95"/>
+  <text x="440" y="150" text-anchor="middle" font-size="10" fill="#2563eb">加载主进程入口</text>
+
+  <!-- 消息 3: 主进程创建窗口 -->
+  <line x1="530" y1="180" x2="730" y2="180" stroke="#ea580c" stroke-width="2" marker-end="url(#arrow-orange)"/>
+  <rect x="590" y="168" width="100" height="16" fill="#fafafa" opacity="0.95"/>
+  <text x="640" y="180" text-anchor="middle" font-size="10" fill="#ea580c">加载预加载脚本</text>
+
+  <!-- 消息 4: 预加载暴露 API -->
+  <line x1="730" y1="210" x2="900" y2="210" stroke="#7c3aed" stroke-width="2" marker-end="url(#arrow-purple)"/>
+  <rect x="780" y="198" width="100" height="16" fill="#fafafa" opacity="0.95"/>
+  <text x="830" y="210" text-anchor="middle" font-size="10" fill="#7c3aed">暴露 window.api</text>
+
+  <!-- 消息 5: 渲染进程加载 React -->
+  <line x1="900" y1="250" x2="900" y2="250" stroke="#7c3aed" stroke-width="2"/>
+  <rect x="840" y="255" width="120" height="16" fill="#fafafa" opacity="0.95"/>
+  <text x="900" y="267" text-anchor="middle" font-size="10" fill="#7c3aed">挂载 React 应用</text>
+
+  <!-- 消息 6: 窗口就绪显示 -->
+  <line x1="900" y1="290" x2="530" y2="290" stroke="#059669" stroke-width="2" stroke-dasharray="5,3" marker-end="url(#arrow-green)"/>
+  <rect x="670" y="278" width="100" height="16" fill="#fafafa" opacity="0.95"/>
+  <text x="720" y="290" text-anchor="middle" font-size="10" fill="#059669">ready-to-show 事件</text>
+
+  <!-- 消息 7: 主进程显示窗口 -->
+  <line x1="530" y1="320" x2="130" y2="320" stroke="#2563eb" stroke-width="2" marker-end="url(#arrow)"/>
+  <rect x="280" y="308" width="120" height="16" fill="#fafafa" opacity="0.95"/>
+  <text x="340" y="320" text-anchor="middle" font-size="10" fill="#2563eb">窗口显示给用户</text>
+
+  <!-- 分隔线：用户交互阶段 -->
+  <line x1="60" y1="360" x2="940" y2="360" stroke="#e5e7eb" stroke-width="1"/>
+  <text x="480" y="378" text-anchor="middle" font-size="12" font-weight="bold" fill="#6b7280">用户交互阶段 (IPC 通信)</text>
+
+  <!-- 消息 8: 用户点击按钮 -->
+  <line x1="130" y1="400" x2="900" y2="400" stroke="#7c3aed" stroke-width="2" marker-end="url(#arrow-purple)"/>
+  <rect x="460" y="388" width="120" height="16" fill="#fafafa" opacity="0.95"/>
+  <text x="520" y="400" text-anchor="middle" font-size="10" fill="#7c3aed">点击 "Send Ping" 按钮</text>
+
+  <!-- 消息 9: 渲染进程发送 IPC -->
+  <line x1="900" y1="430" x2="530" y2="430" stroke="#059669" stroke-width="2" stroke-dasharray="5,3" marker-end="url(#arrow-green)"/>
+  <rect x="680" y="418" width="100" height="16" fill="#fafafa" opacity="0.95"/>
+  <text x="730" y="430" text-anchor="middle" font-size="10" fill="#059669">ipcRenderer.send('ping')</text>
+
+  <!-- 消息 10: 主进程处理 -->
+  <line x1="530" y1="470" x2="530" y2="470" stroke="#2563eb" stroke-width="2"/>
+  <rect x="460" y="475" width="140" height="16" fill="#fafafa" opacity="0.95"/>
+  <text x="530" y="487" text-anchor="middle" font-size="10" fill="#2563eb">主进程处理 ping 事件</text>
+
+  <!-- 消息 11: 主进程响应 -->
+  <line x1="530" y1="510" x2="900" y2="510" stroke="#059669" stroke-width="2" stroke-dasharray="5,3" marker-end="url(#arrow-green)"/>
+  <rect x="680" y="498" width="100" height="16" fill="#fafafa" opacity="0.95"/>
+  <text x="730" y="510" text-anchor="middle" font-size="10" fill="#059669">event.reply() / emit</text>
+
+  <!-- 消息 12: 渲染进程更新 UI -->
+  <line x1="900" y1="540" x2="900" y2="540" stroke="#7c3aed" stroke-width="2"/>
+  <rect x="830" y="545" width="140" height="16" fill="#fafafa" opacity="0.95"/>
+  <text x="900" y="557" text-anchor="middle" font-size="10" fill="#7c3aed">React 更新界面</text>
+
+  <!-- 图例 -->
+  <rect x="60" y="590" width="840" height="60" rx="6" fill="#ffffff" stroke="#e5e7eb" stroke-width="1"/>
+  <text x="80" y="610" font-size="11" font-weight="bold" fill="#374151">通信类型说明：</text>
+  <line x1="80" y1="625" x2="110" y2="625" stroke="#2563eb" stroke-width="2" marker-end="url(#arrow)"/>
+  <text x="115" y="629" font-size="10" fill="#6b7280">同步调用 / 直接执行</text>
+  <line x1="260" y1="625" x2="290" y2="625" stroke="#059669" stroke-width="2" stroke-dasharray="5,3" marker-end="url(#arrow-green)"/>
+  <text x="295" y="629" font-size="10" fill="#6b7280">IPC 异步消息 (主进程 ⟷ 渲染进程)</text>
+  <line x1="520" y1="625" x2="550" y2="625" stroke="#ea580c" stroke-width="2" marker-end="url(#arrow-orange)"/>
+  <text x="555" y="629" font-size="10" fill="#6b7280">预加载脚本加载</text>
+  <line x1="700" y1="625" x2="730" y2="625" stroke="#7c3aed" stroke-width="2" marker-end="url(#arrow-purple)"/>
+  <text x="735" y="629" font-size="10" fill="#6b7280">渲染进程内部 / API 暴露</text>
+</svg>

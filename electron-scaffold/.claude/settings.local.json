@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(gh api *)",
+      "Bash(npm config *)",
+      "Bash(powershell *)"
+    ],
+    "defaultMode": "bypassPermissions"
+  }
+}

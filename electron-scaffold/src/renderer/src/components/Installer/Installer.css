@@ -1,0 +1,361 @@
+/* Windows 经典安装向导样式 */
+.installer-window {
+  width: 600px;
+  height: 450px;
+  background: #f0f0f0;
+  border: 1px solid #a0a0a0;
+  box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.15);
+  display: flex;
+  flex-direction: column;
+  font-family: "Microsoft YaHei", "SimSun", "Segoe UI", Tahoma, sans-serif;
+  font-size: 13px;
+  color: #000;
+  user-select: none;
+}
+
+/* 标题栏 */
+.title-bar {
+  height: 32px;
+  background: linear-gradient(to right, #ffffff, #e8e8e8);
+  border-bottom: 1px solid #c0c0c0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 8px;
+}
+
+.title-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.title-icon {
+  width: 20px;
+  height: 20px;
+  background: linear-gradient(135deg, #ff6b35, #e04a2f);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  color: white;
+  font-weight: bold;
+}
+
+.title-text {
+  font-size: 13px;
+  font-weight: 500;
+  color: #000;
+}
+
+.title-buttons {
+  display: flex;
+  gap: 2px;
+}
+
+.title-btn {
+  width: 28px;
+  height: 22px;
+  border: 1px solid #c0c0c0;
+  background: linear-gradient(to bottom, #ffffff, #e0e0e0);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 14px;
+  color: #333;
+  line-height: 1;
+}
+
+.title-btn:hover {
+  background: linear-gradient(to bottom, #e8f0fe, #c8ddf7);
+  border-color: #7eb4ea;
+}
+
+.title-btn.close:hover {
+  background: linear-gradient(to bottom, #ffcccc, #ff9999);
+  border-color: #ff6666;
+}
+
+/* 主内容区 */
+.main-content {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+}
+
+/* 左侧边栏（带图） */
+.left-sidebar {
+  width: 180px;
+  background: linear-gradient(180deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  position: relative;
+}
+
+.left-sidebar .logo-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.left-sidebar .logo-icon {
+  width: 80px;
+  height: 80px;
+  background: linear-gradient(135deg, #ff6b35, #e04a2f);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 40px;
+  box-shadow: 0 4px 15px rgba(255, 107, 53, 0.4);
+}
+
+.left-sidebar .logo-text {
+  color: white;
+  font-size: 18px;
+  font-weight: bold;
+  letter-spacing: 1px;
+}
+
+.left-sidebar .logo-text span {
+  color: #ff6b35;
+}
+
+/* 右侧内容 */
+.right-content {
+  flex: 1;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.page-title {
+  font-size: 15px;
+  font-weight: bold;
+  color: #000;
+  margin-bottom: 4px;
+}
+
+.page-subtitle {
+  font-size: 13px;
+  color: #333;
+  margin-bottom: 20px;
+  line-height: 1.5;
+}
+
+/* 协议文本框 */
+.license-box {
+  flex: 1;
+  border: 1px solid #c0c0c0;
+  background: white;
+  padding: 12px;
+  overflow-y: auto;
+  font-size: 12px;
+  line-height: 1.8;
+  margin-bottom: 16px;
+}
+
+.license-box a {
+  color: #0066cc;
+  text-decoration: underline;
+}
+
+/* 复选框 */
+.checkbox-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.checkbox-row input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: #0078d4;
+}
+
+/* 路径选择 */
+.path-section {
+  margin-top: 20px;
+}
+
+.path-label {
+  font-size: 13px;
+  margin-bottom: 8px;
+  color: #000;
+}
+
+.path-input-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.path-input {
+  flex: 1;
+  height: 28px;
+  border: 1px solid #c0c0c0;
+  padding: 0 8px;
+  font-size: 12px;
+  background: white;
+  font-family: "Microsoft YaHei", "SimSun", sans-serif;
+}
+
+.browse-btn {
+  height: 28px;
+  padding: 0 16px;
+  border: 1px solid #c0c0c0;
+  background: linear-gradient(to bottom, #ffffff, #e0e0e0);
+  font-size: 12px;
+  cursor: pointer;
+  font-family: "Microsoft YaHei", "SimSun", sans-serif;
+}
+
+.browse-btn:hover {
+  background: linear-gradient(to bottom, #e8f0fe, #c8ddf7);
+  border-color: #7eb4ea;
+}
+
+.space-info {
+  font-size: 12px;
+  color: #333;
+  line-height: 1.8;
+}
+
+.space-info .label {
+  display: inline-block;
+  width: 80px;
+}
+
+/* 进度条 */
+.progress-section {
+  margin-top: 20px;
+}
+
+.progress-bar-bg {
+  width: 100%;
+  height: 24px;
+  background: #e0e0e0;
+  border: 1px solid #c0c0c0;
+  position: relative;
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(to bottom, #2e8b2e, #228b22);
+  transition: width 0.3s ease;
+  position: relative;
+}
+
+.progress-bar-fill::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 40%;
+  background: linear-gradient(to bottom, rgba(255,255,255,0.3), transparent);
+}
+
+.progress-text {
+  margin-top: 8px;
+  font-size: 12px;
+  color: #666;
+}
+
+/* 完成页面 */
+.finish-content {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* 底部按钮栏 */
+.bottom-bar {
+  height: 52px;
+  border-top: 1px solid #c0c0c0;
+  background: linear-gradient(to bottom, #f5f5f5, #e8e8e8);
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 0 16px;
+  gap: 8px;
+}
+
+.version-info {
+  position: absolute;
+  left: 16px;
+  font-size: 11px;
+  color: #888;
+}
+
+.btn {
+  height: 28px;
+  padding: 0 20px;
+  border: 1px solid #c0c0c0;
+  background: linear-gradient(to bottom, #ffffff, #e0e0e0);
+  font-size: 12px;
+  cursor: pointer;
+  font-family: "Microsoft YaHei", "SimSun", sans-serif;
+  min-width: 80px;
+}
+
+.btn:hover {
+  background: linear-gradient(to bottom, #e8f0fe, #c8ddf7);
+  border-color: #7eb4ea;
+}
+
+.btn.primary {
+  background: linear-gradient(to bottom, #4a9eff, #0078d4);
+  color: white;
+  border-color: #006cbd;
+}
+
+.btn.primary:hover {
+  background: linear-gradient(to bottom, #5aadff, #1a85ff);
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn .shortcut {
+  text-decoration: underline;
+}
+
+/* 右上角小图标 */
+.top-right-logo {
+  position: absolute;
+  top: 40px;
+  right: 12px;
+  width: 48px;
+  height: 48px;
+  background: linear-gradient(135deg, #ff6b35, #e04a2f);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+
+/* 页面切换动画 */
+.page-enter {
+  opacity: 0;
+  transform: translateX(20px);
+}
+
+.page-enter-active {
+  opacity: 1;
+  transform: translateX(0);
+  transition: opacity 0.2s, transform 0.2s;
+}
