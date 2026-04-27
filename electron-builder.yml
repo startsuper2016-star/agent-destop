@@ -52,10 +52,10 @@ nsis:
   displayLanguageSelector: false                   # 不显示语言选择器（默认中文）
 
   # 语言配置 - 修复中文乱码
+  language: "0004"                                # 简体中文语言 ID (0004 = Chinese Simplified)
   installerLanguages:                              # 安装程序支持的语言
     - zh_CN                                        # 简体中文
     - en_US                                        # 英语（备用）
-  installerLocale: zh_CN                           # 默认语言：简体中文
   unicode: true                                    # 启用 Unicode 支持，防止中文乱码
 
   # 删除应用数据
