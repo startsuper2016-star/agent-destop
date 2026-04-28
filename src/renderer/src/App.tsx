@@ -46,7 +46,7 @@ function App() {
           {step === 'home' && (
             <motion.div
               key="home"
-              className="h-full"
+              className="h-full w-full"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
@@ -59,7 +59,7 @@ function App() {
           {step === 'skills' && (
             <motion.div
               key="skills"
-              className="h-full"
+              className="h-full w-full"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
@@ -72,7 +72,7 @@ function App() {
           {step === 'ai' && (
             <motion.div
               key="ai"
-              className="h-full"
+              className="h-full w-full"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
@@ -85,7 +85,7 @@ function App() {
           {step === 'editor' && (
             <motion.div
               key="editor"
-              className="h-full"
+              className="h-full w-full"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
@@ -98,7 +98,7 @@ function App() {
           {step === 'settings' && (
             <motion.div
               key="settings"
-              className="h-full"
+              className="h-full w-full"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
