@@ -1,5 +1,6 @@
-import { useState, useEffect } from 'react'
-import { Save, PenLine, ChevronRight } from 'lucide-react'
+import { useState, useMemo, useCallback } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { Save, ChevronRight, FileCode } from 'lucide-react'
 import { toast } from 'sonner'
 import { CodePane } from '../ui/CodePane'
 
@@ -13,7 +14,8 @@ interface FormData {
   instructions: string
 }
 
-function buildSkillMarkdown(data: FormData): string {
+// Build skill markdown - pure function, can be hoisted
+const buildSkillMarkdown = (data: FormData): string => {
   const name = data.name || 'unnamed-skill'
   const description = data.description || 'No description provided'
   const instructions = data.instructions || 'No instructions provided'
@@ -29,20 +31,34 @@ ${instructions}
 `
 }
 
+// Initial form state - hoisted to avoid recreation
+const INITIAL_FORM_DATA: FormData = {
+  name: '',
+  description: '',
+  instructions: ''
+}
+
+// Animation variants
+const fieldVariants = {
+  hidden: { opacity: 0, y: 12 },
+  visible: { opacity: 1, y: 0 }
+}
+
 export function ManualEditor({ onBack }: ManualEditorProps) {
-  const [formData, setFormData] = useState<FormData>({
-    name: '',
-    description: '',
-    instructions: ''
-  })
-  const [previewContent, setPreviewContent] = useState('')
+  const [formData, setFormData] = useState<FormData>(INITIAL_FORM_DATA)
 
-  useEffect(() => {
-    const content = buildSkillMarkdown(formData)
-    setPreviewContent(content)
-  }, [formData])
+  // Derive preview content from form data (no useEffect needed)
+  const previewContent = useMemo(() => buildSkillMarkdown(formData), [formData])
 
-  const handleSave = async () => {
+  // Derive form validity
+  const isFormValid = formData.name && formData.instructions
+
+  // Stable update handlers
+  const updateField = useCallback(<K extends keyof FormData>(field: K, value: FormData[K]) => {
+    setFormData(prev => ({ ...prev, [field]: value }))
+  }, [])
+
+  const handleSave = useCallback(async () => {
     if (!formData.name || !formData.instructions) {
       toast.error('请填写所有必填字段')
       return
@@ -56,11 +72,11 @@ export function ManualEditor({ onBack }: ManualEditorProps) {
 
     if (result.success) {
       toast.success(`已保存到: ${result.path}`)
-      setFormData({ name: '', description: '', instructions: '' })
+      setFormData(INITIAL_FORM_DATA)
     } else {
       toast.error(result.error || '保存失败')
     }
-  }
+  }, [formData])
 
   return (
     <div className="h-full flex">
@@ -77,74 +93,115 @@ export function ManualEditor({ onBack }: ManualEditorProps) {
 
         {/* Content */}
         <div className="app-content">
-          <div className="max-w-2xl mx-auto space-y-6">
+          <div className="max-w-xl space-y-8">
             {/* Name Field */}
-            <div>
+            <motion.div
+              variants={fieldVariants}
+              initial="hidden"
+              animate="visible"
+              transition={{ duration: 0.2 }}
+            >
               <label className="form-label">
                 Name <span className="text-red-500">*</span>
               </label>
               <input
                 type="text"
                 value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                onChange={(e) => updateField('name', e.target.value)}
                 placeholder="e.g. review-helper"
                 className="input"
               />
               <p className="form-hint">Must be unique within the workspace.</p>
-            </div>
+            </motion.div>
 
             {/* Description Field */}
-            <div>
+            <motion.div
+              variants={fieldVariants}
+              initial="hidden"
+              animate="visible"
+              transition={{ duration: 0.2, delay: 0.05 }}
+            >
               <label className="form-label">Description</label>
               <input
                 type="text"
                 value={formData.description}
-                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                onChange={(e) => updateField('description', e.target.value)}
                 placeholder="One sentence on when to assign this skill to an agent."
                 className="input"
               />
-            </div>
+            </motion.div>
 
             {/* Instructions Field */}
-            <div>
+            <motion.div
+              variants={fieldVariants}
+              initial="hidden"
+              animate="visible"
+              transition={{ duration: 0.2, delay: 0.1 }}
+            >
               <label className="form-label">
                 Instructions <span className="text-red-500">*</span>
               </label>
               <textarea
                 value={formData.instructions}
-                onChange={(e) => setFormData({ ...formData, instructions: e.target.value })}
+                onChange={(e) => updateField('instructions', e.target.value)}
                 placeholder="Enter the skill instructions..."
-                className="textarea min-h-[240px]"
+                className="textarea min-h-[280px]"
               />
-            </div>
+            </motion.div>
 
             {/* Actions */}
-            <button
+            <motion.button
               onClick={handleSave}
-              disabled={!formData.name || !formData.instructions}
+              disabled={!isFormValid}
               className="btn btn-primary w-full justify-center disabled:opacity-50"
+              variants={fieldVariants}
+              initial="hidden"
+              animate="visible"
+              transition={{ duration: 0.2, delay: 0.15 }}
             >
               <Save size={16} />
               Create skill
-            </button>
+            </motion.button>
           </div>
         </div>
       </div>
 
       {/* Right Panel - Preview */}
-      <div className="app-right-panel p-6">
+      <motion.div
+        className="app-right-panel p-6"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.3 }}
+      >
         <div className="section-title">Preview</div>
-        {previewContent ? (
-          <CodePane className="max-h-[calc(100vh-120px)]">
-            <pre className="whitespace-pre-wrap">{previewContent}</pre>
-          </CodePane>
-        ) : (
-          <div className="flex flex-col items-center justify-center h-48 text-[var(--text-muted)] gap-3">
-            <PenLine size={28} className="opacity-20" />
-            <span className="text-sm">Start filling the form to see preview.</span>
-          </div>
-        )}
-      </div>
+        <AnimatePresence mode="wait">
+          {previewContent ? (
+            <motion.div
+              key="preview"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            >
+              <CodePane className="max-h-[calc(100vh-140px)]">
+                <pre className="whitespace-pre-wrap">{previewContent}</pre>
+              </CodePane>
+            </motion.div>
+          ) : (
+            <motion.div
+              key="empty"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="flex flex-col items-center justify-center h-64 text-[var(--text-muted)]"
+            >
+              <div className="w-14 h-14 rounded-xl bg-[var(--bg-base)] border border-[var(--border)] flex items-center justify-center mb-4">
+                <FileCode size={24} className="opacity-30" strokeWidth={1.5} />
+              </div>
+              <span className="text-sm">Start filling the form to see preview</span>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </motion.div>
     </div>
   )
 }

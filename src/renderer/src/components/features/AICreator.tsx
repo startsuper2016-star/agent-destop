@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { motion } from 'framer-motion'
+import { useState, useCallback } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 import { Sparkles, Loader2, Save, ChevronRight } from 'lucide-react'
 import { toast } from 'sonner'
 import { CodePane } from '../ui/CodePane'
@@ -17,7 +17,7 @@ export function AICreator({ apiKey, onBack }: AICreatorProps) {
   const [generatedContent, setGeneratedContent] = useState('')
   const [skillData, setSkillData] = useState<SkillContent | null>(null)
 
-  const handleGenerate = async () => {
+  const handleGenerate = useCallback(async () => {
     if (!prompt.trim()) {
       toast.error('请输入你的需求描述')
       return
@@ -51,9 +51,9 @@ export function AICreator({ apiKey, onBack }: AICreatorProps) {
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [prompt, apiKey])
 
-  const handleSave = async () => {
+  const handleSave = useCallback(async () => {
     if (!skillData?.name) {
       toast.error('技能名称不能为空')
       return
@@ -69,34 +69,31 @@ export function AICreator({ apiKey, onBack }: AICreatorProps) {
     } else {
       toast.error(result.error || '保存失败')
     }
-  }
+  }, [skillData, generatedContent])
 
   return (
     <div className="h-full flex">
       {/* Main Content */}
       <div className="flex-1 flex flex-col min-w-0">
-        {/* Header */}
-        <div className="page-header">
-          <div className="breadcrumb">
-            <span className="breadcrumb-item" onClick={onBack}>New skill</span>
-            <ChevronRight size={16} className="breadcrumb-separator" />
-            <span className="breadcrumb-current">AI Generate</span>
-          </div>
-        </div>
-
         {/* Content */}
         <div className="app-content">
-          <div className="max-w-2xl mx-auto">
+          <div className="content-centered-lg">
+            {/* Breadcrumb */}
+            <div className="flex items-center gap-2 text-sm text-[var(--text-muted)] mb-6">
+              <button onClick={onBack} className="hover:text-[var(--accent-primary)] transition-colors">New skill</button>
+              <ChevronRight size={14} />
+              <span className="text-[var(--text-secondary)]">AI Generate</span>
+            </div>
+
             {/* Prompt Input */}
-            <div className="mb-6">
+            <div className="mb-8">
               <label className="form-label">Description</label>
               <textarea
                 value={prompt}
                 onChange={(e) => setPrompt(e.target.value)}
                 placeholder="Describe what you want the skill to do..."
-                className="textarea"
+                className="textarea min-h-[140px]"
                 disabled={isLoading}
-                rows={4}
               />
               <p className="form-hint">
                 One sentence describing when an agent should use this skill...
@@ -122,52 +119,63 @@ export function AICreator({ apiKey, onBack }: AICreatorProps) {
             </button>
 
             {/* Generated Content */}
-            {generatedContent && (
-              <motion.div
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3 }}
-                className="mt-8"
-              >
-                <div className="flex items-center justify-between mb-3">
-                  <label className="form-label mb-0">Generated SKILL.md</label>
-                  <button onClick={handleSave} className="btn btn-secondary btn-sm">
-                    <Save size={14} />
-                    Save skill
-                  </button>
-                </div>
-                <CodePane className="max-h-[400px]">
-                  <pre className="whitespace-pre-wrap">{generatedContent}</pre>
-                </CodePane>
-              </motion.div>
-            )}
+            <AnimatePresence>
+              {generatedContent && (
+                <motion.div
+                  initial={{ opacity: 0, y: 16 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -16 }}
+                  transition={{ duration: 0.25 }}
+                  className="mt-10"
+                >
+                  <div className="flex items-center justify-between mb-4">
+                    <label className="form-label mb-0">Generated SKILL.md</label>
+                    <button onClick={handleSave} className="btn btn-secondary btn-sm">
+                      <Save size={14} />
+                      Save skill
+                    </button>
+                  </div>
+                  <CodePane className="max-h-[420px]">
+                    <pre className="whitespace-pre-wrap">{generatedContent}</pre>
+                  </CodePane>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         </div>
       </div>
 
       {/* Right Panel - Metadata */}
-      {skillData && (
-        <div className="app-right-panel p-6">
-          <div className="section-title">Metadata</div>
-          <div className="space-y-5 text-sm">
-            <div>
-              <div className="text-[var(--text-muted)] text-xs font-semibold uppercase tracking-wider mb-1.5">Name</div>
-              <div className="font-semibold text-[var(--text)]">{skillData.name}</div>
-            </div>
-            <div>
-              <div className="text-[var(--text-muted)] text-xs font-semibold uppercase tracking-wider mb-1.5">Description</div>
-              <div className="text-[var(--text-secondary)] leading-relaxed">{skillData.description}</div>
-            </div>
-            <div>
-              <div className="text-[var(--text-muted)] text-xs font-semibold uppercase tracking-wider mb-1.5">Status</div>
-              <div className="flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-green-500" />
-                <span className="font-medium">Generated</span>
+      <AnimatePresence>
+        {skillData && (
+          <motion.div
+            className="app-right-panel p-6"
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: 20 }}
+            transition={{ duration: 0.25 }}
+          >
+            <div className="section-title">Metadata</div>
+            <div className="space-y-6 text-sm">
+              <div>
+                <div className="text-[var(--text-muted)] text-xs font-semibold uppercase tracking-wider mb-2">Name</div>
+                <div className="font-semibold text-[var(--text)] text-base">{skillData.name}</div>
+              </div>
+              <div>
+                <div className="text-[var(--text-muted)] text-xs font-semibold uppercase tracking-wider mb-2">Description</div>
+                <div className="text-[var(--text-secondary)] leading-relaxed">{skillData.description}</div>
+              </div>
+              <div>
+                <div className="text-[var(--text-muted)] text-xs font-semibold uppercase tracking-wider mb-2">Status</div>
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 rounded-full bg-green-500" />
+                  <span className="font-medium text-green-600">Generated</span>
+                </div>
               </div>
             </div>
-          </div>
-        </div>
-      )}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   )
 }

@@ -22,6 +22,15 @@ files:
 asarUnpack:
   - resources/**
 
+# 额外资源文件（会复制到 resources 目录）
+extraResources:
+  - from: build/icon.png
+    to: icon.png
+  - from: src/renderer/pet
+    to: pet
+    filter:
+      - "**/*"
+
 # Windows 平台配置
 win:
   executableName: Zhike                           # 可执行文件名

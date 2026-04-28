@@ -17,7 +17,6 @@
       overflow: hidden;
       background: transparent;
       font-family: system-ui, -apple-system, sans-serif;
-      -webkit-app-region: drag;
       user-select: none;
     }
 
@@ -37,6 +36,7 @@
       position: relative;
       cursor: grab;
       transition: transform 0.3s ease;
+      -webkit-app-region: drag;
     }
 
     .pet-expanded:active {
@@ -203,39 +203,100 @@
       right: -5px;
     }
 
-    /* 右键菜单 */
+    /* 智能座舱风格右键菜单 */
     .context-menu {
       position: fixed;
-      background: white;
-      border-radius: 12px;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
-      padding: 6px;
-      min-width: 180px;
+      background: linear-gradient(135deg, rgba(30, 41, 59, 0.95), rgba(15, 23, 42, 0.98));
+      backdrop-filter: blur(20px);
+      border-radius: 24px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      padding: 16px;
+      min-width: 200px;
       z-index: 1000;
       display: none;
       -webkit-app-region: no-drag;
+      border: 1px solid rgba(255, 255, 255, 0.1);
     }
 
-    .context-menu.show { display: block; }
+    .context-menu.show {
+      display: block;
+      animation: menu-appear 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    }
+
+    @keyframes menu-appear {
+      from {
+        opacity: 0;
+        transform: scale(0.8) translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+      }
+    }
+
+    .menu-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
 
     .menu-item {
-      padding: 10px 14px;
-      border-radius: 8px;
+      width: 56px;
+      height: 56px;
+      border-radius: 16px;
       cursor: pointer;
-      font-size: 13px;
-      color: #374151;
       display: flex;
+      flex-direction: column;
       align-items: center;
-      gap: 10px;
-      transition: all 0.15s;
+      justify-content: center;
+      gap: 4px;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      background: rgba(255, 255, 255, 0.05);
+      position: relative;
+      overflow: hidden;
     }
 
-    .menu-item:hover { background: #f3f4f6; }
+    .menu-item::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(102, 126, 234, 0.3), rgba(118, 75, 162, 0.3));
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+
+    .menu-item:hover {
+      transform: translateY(-4px) scale(1.05);
+      background: rgba(255, 255, 255, 0.1);
+      box-shadow: 0 8px 24px rgba(102, 126, 234, 0.3);
+    }
+
+    .menu-item:hover::before {
+      opacity: 1;
+    }
+
+    .menu-item-icon {
+      font-size: 22px;
+      z-index: 1;
+    }
+
+    .menu-item-label {
+      font-size: 10px;
+      color: rgba(255, 255, 255, 0.8);
+      z-index: 1;
+      font-weight: 500;
+      letter-spacing: 0.3px;
+    }
+
+    .menu-item:hover .menu-item-label {
+      color: white;
+    }
 
     .menu-divider {
+      grid-column: span 3;
       height: 1px;
-      background: #e5e7eb;
-      margin: 6px 0;
+      background: rgba(255, 255, 255, 0.1);
+      margin: 8px 0;
     }
 
     /* 动画 */
@@ -452,31 +513,37 @@
     </div>
   </div>
 
-  <!-- 右键菜单 -->
+  <!-- 智能座舱风格右键菜单 -->
   <div class="context-menu" id="contextMenu">
-    <div class="menu-item" onclick="handleMenuAction('skills')">
-      <span>🎯</span> 我的技能
-    </div>
-    <div class="menu-divider"></div>
-    <div class="menu-item" onclick="handleMenuAction('feed')">
-      <span>🍖</span> 喂食
-    </div>
-    <div class="menu-item" onclick="handleMenuAction('play')">
-      <span>🎮</span> 玩耍
-    </div>
-    <div class="menu-item" onclick="handleMenuAction('talk')">
-      <span>💬</span> 聊天
-    </div>
-    <div class="menu-divider"></div>
-    <div class="menu-item" onclick="handleMenuAction('collapse')">
-      <span>😴</span> 睡觉
-    </div>
-    <div class="menu-item" onclick="handleMenuAction('settings')">
-      <span>⚙️</span> 设置
-    </div>
-    <div class="menu-divider"></div>
-    <div class="menu-item" onclick="handleMenuAction('hide')">
-      <span>👋</span> 隐藏
+    <div class="menu-grid">
+      <div class="menu-item" onclick="handleMenuAction('skills')">
+        <span class="menu-item-icon">🎯</span>
+        <span class="menu-item-label">技能</span>
+      </div>
+      <div class="menu-item" onclick="handleMenuAction('feed')">
+        <span class="menu-item-icon">🍖</span>
+        <span class="menu-item-label">喂食</span>
+      </div>
+      <div class="menu-item" onclick="handleMenuAction('play')">
+        <span class="menu-item-icon">🎮</span>
+        <span class="menu-item-label">玩耍</span>
+      </div>
+      <div class="menu-item" onclick="handleMenuAction('talk')">
+        <span class="menu-item-icon">💬</span>
+        <span class="menu-item-label">聊天</span>
+      </div>
+      <div class="menu-item" onclick="handleMenuAction('collapse')">
+        <span class="menu-item-icon">😴</span>
+        <span class="menu-item-label">睡觉</span>
+      </div>
+      <div class="menu-item" onclick="handleMenuAction('settings')">
+        <span class="menu-item-icon">⚙️</span>
+        <span class="menu-item-label">设置</span>
+      </div>
+      <div class="menu-item" onclick="handleMenuAction('hide')">
+        <span class="menu-item-icon">👋</span>
+        <span class="menu-item-label">隐藏</span>
+      </div>
     </div>
   </div>
 
@@ -571,7 +638,7 @@
         petExpanded.style.display = 'none'
         petCollapsed.style.display = 'block'
         ipcRenderer.send('pet:resize', { width: 60, height: 60 })
-        ipcRenderer.send('pet:click-through', true)
+        ipcRenderer.send('pet:click-through', false) // 保持可点击
       } else {
         petExpanded.style.display = 'block'
         petCollapsed.style.display = 'none'
@@ -635,6 +702,8 @@
     // 拖拽文件进入
     document.addEventListener('dragenter', (e) => {
       e.preventDefault()
+      e.stopPropagation()
+      console.log('📁 [Drag] File entered')
       if (!isCollapsed) {
         dropZone.classList.add('active')
         showSpeech('松开即可处理文件！', 2000)
@@ -644,17 +713,21 @@
     // 拖拽文件悬停
     document.addEventListener('dragover', (e) => {
       e.preventDefault()
+      e.stopPropagation()
     })
 
     // 拖拽文件离开
     document.addEventListener('dragleave', (e) => {
       e.preventDefault()
+      e.stopPropagation()
       dropZone.classList.remove('active')
     })
 
     // 放置文件
     document.addEventListener('drop', (e) => {
       e.preventDefault()
+      e.stopPropagation()
+      console.log('📁 [Drop] File dropped')
       dropZone.classList.remove('active')
 
       if (isCollapsed) {
@@ -742,8 +815,35 @@
     // 右键菜单
     petContainer.addEventListener('contextmenu', (e) => {
       e.preventDefault()
-      contextMenu.style.left = e.clientX + 'px'
-      contextMenu.style.top = e.clientY + 'px'
+
+      // 获取窗口尺寸
+      const windowWidth = window.innerWidth
+      const windowHeight = window.innerHeight
+
+      // 菜单预估尺寸
+      const menuWidth = 180
+      const menuHeight = 280
+
+      // 计算菜单位置，确保不超出窗口
+      let menuX = e.clientX
+      let menuY = e.clientY
+
+      // 如果右侧空间不足，菜单向左展开
+      if (menuX + menuWidth > windowWidth) {
+        menuX = windowWidth - menuWidth - 10
+      }
+
+      // 如果底部空间不足，菜单向上展开
+      if (menuY + menuHeight > windowHeight) {
+        menuY = windowHeight - menuHeight - 10
+      }
+
+      // 确保不超出左上角
+      menuX = Math.max(10, menuX)
+      menuY = Math.max(10, menuY)
+
+      contextMenu.style.left = menuX + 'px'
+      contextMenu.style.top = menuY + 'px'
       contextMenu.classList.add('show')
     })
 

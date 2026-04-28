@@ -1,4 +1,4 @@
-import { Sparkles, FileEdit } from 'lucide-react'
+import { Sparkles, FileEdit, ArrowRight } from 'lucide-react'
 import { AppStep } from '../../types/skill'
 
 interface HomeProps {
@@ -8,54 +8,49 @@ interface HomeProps {
 export function Home({ onNavigate }: HomeProps) {
   return (
     <div className="h-full flex flex-col">
-      {/* Header */}
-      <div className="page-header">
-        <div className="breadcrumb">
-          <span className="breadcrumb-current">New skill</span>
-        </div>
-      </div>
-
       {/* Content */}
       <div className="app-content">
-        <div className="max-w-lg mx-auto mt-16">
-          <div className="mb-10">
-            <h1 className="page-title">Create a new skill</h1>
-            <p className="page-subtitle">
-              Choose how you want to create your skill.
-            </p>
+        <div className="home-container">
+          {/* Title Section */}
+          <div className="home-header">
+            <h1 className="home-title">Create a new skill</h1>
+            <p className="home-subtitle">Choose how you want to create your skill.</p>
           </div>
 
-          <div className="space-y-4">
+          {/* Options Grid */}
+          <div className="home-grid">
             {/* AI Create */}
             <button
               onClick={() => onNavigate('ai')}
-              className="card-option"
+              className="home-option"
             >
-              <div className="card-option-icon">
-                <Sparkles size={18} strokeWidth={1.5} />
+              <div className="home-option-icon">
+                <Sparkles size={28} strokeWidth={1.5} />
               </div>
-              <div>
-                <div className="card-option-title">AI Generate</div>
-                <div className="card-option-desc">
+              <div className="home-option-content">
+                <div className="home-option-title">AI Generate</div>
+                <div className="home-option-desc">
                   Describe what you need, AI generates the skill for you.
                 </div>
               </div>
+              <ArrowRight size={18} className="home-option-arrow" />
             </button>
 
             {/* Manual Create */}
             <button
               onClick={() => onNavigate('editor')}
-              className="card-option"
+              className="home-option"
             >
-              <div className="card-option-icon">
-                <FileEdit size={18} strokeWidth={1.5} />
+              <div className="home-option-icon home-option-icon-secondary">
+                <FileEdit size={28} strokeWidth={1.5} />
               </div>
-              <div>
-                <div className="card-option-title">Create manually</div>
-                <div className="card-option-desc">
+              <div className="home-option-content">
+                <div className="home-option-title">Create manually</div>
+                <div className="home-option-desc">
                   Write a new SKILL.md from scratch.
                 </div>
               </div>
+              <ArrowRight size={18} className="home-option-arrow" />
             </button>
           </div>
         </div>

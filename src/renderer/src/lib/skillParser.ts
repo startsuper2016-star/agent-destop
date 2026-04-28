@@ -5,6 +5,12 @@
 
 import { SkillContent } from '../types/skill'
 
+// Hoist RegExp to module level for better performance
+const FRONTMATTER_REGEX = /^---\s*\n([\s\S]*?)\n---\s*\n/
+const NAME_REGEX = /name:\s*(.+)/
+const DESC_REGEX = /description:\s*(.+)/
+const INSTRUCTIONS_REGEX = /^#\s*Instructions\s*\n([\s\S]*)/
+
 /**
  * 解析 SKILL.md 内容
  */
@@ -17,7 +23,7 @@ export function parseSkillMarkdown(content: string): SkillContent {
   }
 
   // 提取 YAML Frontmatter
-  const frontmatterMatch = content.match(/^---\s*\n([\s\S]*?)\n---\s*\n/)
+  const frontmatterMatch = content.match(FRONTMATTER_REGEX)
   if (!frontmatterMatch) {
     return defaultResult
   }
@@ -26,11 +32,11 @@ export function parseSkillMarkdown(content: string): SkillContent {
   const remainingContent = content.slice(frontmatterMatch[0].length)
 
   // 解析 YAML 字段
-  const nameMatch = frontmatter.match(/name:\s*(.+)/)
-  const descMatch = frontmatter.match(/description:\s*(.+)/)
+  const nameMatch = frontmatter.match(NAME_REGEX)
+  const descMatch = frontmatter.match(DESC_REGEX)
 
   // 提取 Instructions 部分
-  const instructionsMatch = remainingContent.match(/^#\s*Instructions\s*\n([\s\S]*)/)
+  const instructionsMatch = remainingContent.match(INSTRUCTIONS_REGEX)
   const instructions = instructionsMatch ? instructionsMatch[1].trim() : remainingContent.trim()
 
   return {

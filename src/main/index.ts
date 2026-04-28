@@ -397,7 +397,7 @@ function createPetWindow(): void {
     resizable: false,
     maximizable: false,
     minimizable: false,
-    focusable: false,
+    focusable: true,
     show: false,
     webPreferences: {
       nodeIntegration: true,
@@ -407,8 +407,8 @@ function createPetWindow(): void {
 
   // 加载宠物页面
   const petPath = is.dev
-    ? join(__dirname, '../../pet.html')
-    : join(process.resourcesPath, 'pet.html')
+    ? join(__dirname, '../renderer/pet/index.html')
+    : join(process.resourcesPath, 'pet/index.html')
 
   petWindow.loadFile(petPath)
 
@@ -422,16 +422,44 @@ function createPetWindow(): void {
 }
 
 /**
+ * 获取窗口图标路径
+ */
+function getWindowIconPath(): string | undefined {
+  // 可能的图标路径
+  const possiblePaths = [
+    is.dev ? join(__dirname, '../../build/icon.png') : join(process.resourcesPath, 'icon.png'),
+    join(__dirname, '../../build/icon.png'),
+    join(__dirname, '../build/icon.png'),
+    join(process.resourcesPath, 'build/icon.png'),
+    join(app.getAppPath(), 'build/icon.png')
+  ]
+
+  for (const iconPath of possiblePaths) {
+    if (fs.existsSync(iconPath)) {
+      console.log('🎨 [Window Icon] Loading from:', iconPath)
+      return iconPath
+    }
+  }
+
+  console.warn('⚠️ [Window Icon] No icon found')
+  return undefined
+}
+
+/**
  * 创建主窗口
  * 主进程负责管理应用生命周期、创建窗口、处理系统级事件
  */
 function createWindow(): void {
+  // 获取窗口图标
+  const iconPath = getWindowIconPath()
+
   // 创建浏览器窗口实例
   mainWindow = new BrowserWindow({
-    width: 900,              // 窗口默认宽度
-    height: 670,             // 窗口默认高度
+    width: 1200,             // 窗口默认宽度
+    height: 800,             // 窗口默认高度
     show: false,             // 初始不显示，等加载完成后再显示(避免白屏闪烁)
     autoHideMenuBar: true,   // 自动隐藏菜单栏(Windows/Linux)
+    icon: iconPath,          // 窗口图标
     webPreferences: {
       // 预加载脚本路径：在页面渲染前注入，用于安全地暴露主进程API给渲染进程
       preload: join(__dirname, '../preload/index.js'),
@@ -462,14 +490,49 @@ function createWindow(): void {
  * 创建系统托盘
  */
 function createTray(): void {
-  // 使用一个简单的图标（可以用 emoji 或 base64 图标）
-  const trayIcon = join(__dirname, '../../build/icon.png')
+  // 托盘图标路径 - 开发环境和生产环境
+  let trayIconPath: string
 
-  if (fs.existsSync(trayIcon)) {
+  if (is.dev) {
+    // 开发环境：使用 build 目录下的图标
+    trayIconPath = join(__dirname, '../../build/icon.png')
+  } else {
+    // 生产环境：使用打包后的 resources 目录
+    trayIconPath = join(process.resourcesPath, 'icon.png')
+  }
+
+  // 如果图标不存在，尝试其他路径
+  if (!fs.existsSync(trayIconPath)) {
+    const fallbackPaths = [
+      join(__dirname, '../../build/icon.png'),
+      join(__dirname, '../build/icon.png'),
+      join(process.resourcesPath, 'build/icon.png'),
+      join(app.getAppPath(), 'build/icon.png')
+    ]
+
+    for (const fallback of fallbackPaths) {
+      if (fs.existsSync(fallback)) {
+        trayIconPath = fallback
+        break
+      }
+    }
+  }
+
+  console.log('🎨 [Tray] Loading icon from:', trayIconPath)
+
+  if (fs.existsSync(trayIconPath)) {
+    // 创建托盘图标并设置大小（Windows 托盘图标推荐 16x16）
+    const { nativeImage } = require('electron')
+    const icon = nativeImage.createFromPath(trayIconPath)
+    // 缩放为适合托盘的大小
+    const trayIcon = icon.resize({ width: 16, height: 16 })
     tray = new Tray(trayIcon)
   } else {
-    // 如果没有图标文件，创建一个空的 tray（Windows 会显示默认图标）
-    tray = new Tray(join(__dirname, '../../resources/icon.png'))
+    console.warn('⚠️ [Tray] Icon not found, using default')
+    // 创建一个空白图标作为后备
+    const { nativeImage } = require('electron')
+    const emptyIcon = nativeImage.createEmpty()
+    tray = new Tray(emptyIcon)
   }
 
   const contextMenu = Menu.buildFromTemplate([
