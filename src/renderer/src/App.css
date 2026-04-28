@@ -1,9 +1,5 @@
-/* 应用容器 - 居中显示安装向导 */
+/* App Container - minimal styling, most handled by Tailwind */
 .app-container {
   width: 100vw;
   height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
 }
