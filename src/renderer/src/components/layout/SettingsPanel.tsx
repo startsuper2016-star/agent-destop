@@ -75,7 +75,7 @@ export function SettingsPanel({ apiKey, onApiKeyChange }: SettingsPanelProps) {
       {/* Navigation */}
       <nav className="settings-nav">
         <div className="settings-nav-header">
-          <h1 className="settings-nav-title">设置</h1>
+          <h1 className="settings-nav-title">Settings</h1>
         </div>
         <div className="settings-nav-list">
           {navItems.map((item) => (
@@ -199,33 +199,37 @@ export function SettingsPanel({ apiKey, onApiKeyChange }: SettingsPanelProps) {
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
-                        className="settings-info-list"
+                        className="settings-info-table"
                       >
                         <div className="settings-info-row">
                           <span className="settings-info-label">Operating System</span>
-                          <span className="settings-info-value">{env?.os || 'Unknown'}</span>
+                          <div className="settings-info-value-box">
+                            <span className="settings-info-value">{env?.os || 'Unknown'}</span>
+                          </div>
                         </div>
                         <div className="settings-info-row">
                           <span className="settings-info-label">Skills Directory</span>
-                          <span className="settings-info-value" title={env?.skillsDir}>
-                            {env?.skillsDir || 'Not configured'}
-                          </span>
+                          <div className="settings-info-value-box">
+                            <span className="settings-info-value settings-info-value-path" title={env?.skillsDir}>
+                              {env?.skillsDir || 'Not configured'}
+                            </span>
+                          </div>
                         </div>
                         <div className="settings-info-row">
                           <span className="settings-info-label">Directory Status</span>
-                          <span className="flex items-center gap-2">
+                          <div className="settings-info-value-box">
                             {env?.skillsDirExists ? (
-                              <span className="flex items-center gap-1.5 text-green-600">
+                              <span className="settings-info-status settings-info-status-success">
                                 <Check size={14} strokeWidth={2.5} />
-                                <span className="settings-info-value">Created</span>
+                                <span>Created</span>
                               </span>
                             ) : (
-                              <span className="flex items-center gap-1.5 text-amber-600">
+                              <span className="settings-info-status settings-info-status-warning">
                                 <AlertCircle size={14} strokeWidth={2.5} />
-                                <span className="settings-info-value">Not created</span>
+                                <span>Not created</span>
                               </span>
                             )}
-                          </span>
+                          </div>
                         </div>
                       </motion.div>
                     )}

@@ -582,28 +582,50 @@ function createTray(): void {
   })
 }
 
-// Electron 应用就绪后执行
-app.whenReady().then(() => {
-  // 设置应用用户模型ID(Windows 任务栏分组显示)
-  electronApp.setAppUserModelId('com.zhike.app')
+// 请求单实例锁，确保只能同时运行一个应用实例
+const gotTheLock = app.requestSingleInstanceLock()
 
-  // 注册 IPC 处理器
-  registerIpcHandlers()
-
-  // 监听窗口创建事件，优化窗口快捷键(如 F12 开发者工具)
-  app.on('browser-window-created', (_, window) => {
-    optimizer.watchWindowShortcuts(window)
+if (!gotTheLock) {
+  // 如果获取不到锁，说明已有实例运行，直接退出
+  app.quit()
+} else {
+  // 监听第二个实例启动事件，激活已有窗口
+  app.on('second-instance', () => {
+    // 如果主窗口存在，显示并聚焦
+    if (mainWindow) {
+      if (mainWindow.isMinimized()) mainWindow.restore()
+      mainWindow.show()
+      mainWindow.focus()
+    }
+    // 如果宠物窗口存在，显示它
+    if (petWindow && !petWindow.isDestroyed()) {
+      petWindow.show()
+    }
   })
 
-  createWindow()
-  createPetWindow()
-  createTray()
+  // Electron 应用就绪后执行
+  app.whenReady().then(() => {
+    // 设置应用用户模型ID(Windows 任务栏分组显示)
+    electronApp.setAppUserModelId('com.zhike.app')
 
-  // macOS 特有：点击 Dock 图标时，如果没有窗口则重新创建
-  app.on('activate', function () {
-    if (BrowserWindow.getAllWindows().length === 0) createWindow()
+    // 注册 IPC 处理器
+    registerIpcHandlers()
+
+    // 监听窗口创建事件，优化窗口快捷键(如 F12 开发者工具)
+    app.on('browser-window-created', (_, window) => {
+      optimizer.watchWindowShortcuts(window)
+    })
+
+    createWindow()
+    createPetWindow()
+    createTray()
+
+    // macOS 特有：点击 Dock 图标时，如果没有窗口则重新创建
+    app.on('activate', function () {
+      if (BrowserWindow.getAllWindows().length === 0) createWindow()
+    })
   })
-})
+}
 
 // 所有窗口关闭时的处理
 app.on('window-all-closed', () => {

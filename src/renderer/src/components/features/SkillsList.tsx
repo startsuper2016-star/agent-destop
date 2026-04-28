@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { FolderOpen, Plus, FileText, Clock, HardDrive, Search, ArrowRight, Sparkles, Grid, List, SlidersHorizontal } from 'lucide-react'
+import { FolderOpen, Plus, FileText, Clock, HardDrive, Search, ArrowRight, Sparkles, Grid, List } from 'lucide-react'
 
 interface SkillItem {
   name: string
