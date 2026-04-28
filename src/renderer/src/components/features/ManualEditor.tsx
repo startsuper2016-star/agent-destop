@@ -82,18 +82,16 @@ export function ManualEditor({ onBack }: ManualEditorProps) {
     <div className="h-full flex">
       {/* Main Content */}
       <div className="flex-1 flex flex-col min-w-0">
-        {/* Header */}
-        <div className="page-header">
-          <div className="breadcrumb">
-            <span className="breadcrumb-item" onClick={onBack}>New skill</span>
-            <ChevronRight size={16} className="breadcrumb-separator" />
-            <span className="breadcrumb-current">Create manually</span>
-          </div>
-        </div>
-
         {/* Content */}
         <div className="app-content">
           <div className="max-w-xl space-y-8">
+            {/* Breadcrumb */}
+            <div className="flex items-center gap-2 text-sm text-[var(--text-muted)]">
+              <button onClick={onBack} className="hover:text-[var(--accent-primary)] transition-colors">New skill</button>
+              <ChevronRight size={14} />
+              <span className="text-[var(--text-secondary)]">Create manually</span>
+            </div>
+
             {/* Name Field */}
             <motion.div
               variants={fieldVariants}

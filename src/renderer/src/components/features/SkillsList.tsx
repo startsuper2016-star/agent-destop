@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo, useCallback } from 'react'
-import { motion } from 'framer-motion'
-import { FolderOpen, Plus, FileText, ChevronRight, Clock, HardDrive } from 'lucide-react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { FolderOpen, Plus, FileText, Clock, HardDrive, Search, ArrowRight, Sparkles, Grid, List, SlidersHorizontal } from 'lucide-react'
 
 interface SkillItem {
   name: string
@@ -13,7 +13,6 @@ interface SkillsListProps {
   onCreateSkill: () => void
 }
 
-// Module-level formatters (pure functions, can be cached)
 const formatDate = (dateString: string): string => {
   const date = new Date(dateString)
   return date.toLocaleDateString('zh-CN', {
@@ -29,15 +28,16 @@ const formatSize = (bytes: number): string => {
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`
 }
 
-// Animation variants - hoisted to avoid recreation
-const itemVariants = {
-  hidden: { opacity: 0, y: 8 },
-  visible: { opacity: 1, y: 0 }
+const cardVariants = {
+  hidden: { opacity: 0, y: 16, scale: 0.96 },
+  visible: { opacity: 1, y: 0, scale: 1 }
 }
 
 export function SkillsList({ onCreateSkill }: SkillsListProps) {
   const [skills, setSkills] = useState<SkillItem[]>([])
   const [loading, setLoading] = useState(true)
+  const [searchQuery, setSearchQuery] = useState('')
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
 
   const loadSkills = useCallback(async () => {
     try {
@@ -56,7 +56,6 @@ export function SkillsList({ onCreateSkill }: SkillsListProps) {
     loadSkills()
   }, [loadSkills])
 
-  // Memoize formatted skills data
   const formattedSkills = useMemo(() => {
     return skills.map(skill => ({
       ...skill,
@@ -65,71 +64,212 @@ export function SkillsList({ onCreateSkill }: SkillsListProps) {
     }))
   }, [skills])
 
+  const filteredSkills = useMemo(() => {
+    if (!searchQuery.trim()) return formattedSkills
+    const query = searchQuery.toLowerCase()
+    return formattedSkills.filter(skill =>
+      skill.name.toLowerCase().includes(query)
+    )
+  }, [formattedSkills, searchQuery])
+
+  const totalSize = useMemo(() => {
+    return formattedSkills.reduce((acc, skill) => acc + skill.size, 0)
+  }, [formattedSkills])
+
   return (
-    <div className="h-full flex flex-col">
+    <div className="skills-page">
       {/* Header */}
-      <div className="page-header">
-        <div className="breadcrumb">
-          <span className="breadcrumb-item">Workspace</span>
-          <ChevronRight size={16} className="breadcrumb-separator" />
-          <span className="breadcrumb-current">Skills</span>
+      <div className="skills-header">
+        <div className="skills-header-inner">
+          {/* Top Row: Title + Actions */}
+          <div className="skills-header-top">
+            <div className="skills-title-section">
+              <div className="skills-title-badge">
+                <Sparkles size={14} />
+              </div>
+              <div>
+                <h1 className="skills-title">Skills</h1>
+                <p className="skills-subtitle">
+                  {loading ? 'Loading...' : 'Manage your AI-powered skill workflows'}
+                </p>
+              </div>
+            </div>
+
+            <button onClick={onCreateSkill} className="skills-create-btn">
+              <Plus size={16} />
+              <span>New Skill</span>
+            </button>
+          </div>
+
+          {/* Bottom Row: Stats + Search + View Toggle */}
+          <div className="skills-header-bottom">
+            <div className="skills-stats">
+              <div className="skills-stat">
+                <span className="skills-stat-value">{formattedSkills.length}</span>
+                <span className="skills-stat-label">Total</span>
+              </div>
+              <div className="skills-stat-divider" />
+              <div className="skills-stat">
+                <span className="skills-stat-value">{formatSize(totalSize)}</span>
+                <span className="skills-stat-label">Size</span>
+              </div>
+            </div>
+
+            <div className="skills-toolbar">
+              <div className="skills-search-wrapper">
+                <Search size={15} className="skills-search-icon" />
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Search skills..."
+                  className="skills-search"
+                />
+                {searchQuery && (
+                  <button
+                    onClick={() => setSearchQuery('')}
+                    className="skills-search-clear"
+                  >
+                    ×
+                  </button>
+                )}
+              </div>
+
+              <div className="skills-view-toggle">
+                <button
+                  onClick={() => setViewMode('grid')}
+                  className={`skills-view-btn ${viewMode === 'grid' ? 'active' : ''}`}
+                  title="Grid view"
+                >
+                  <Grid size={15} />
+                </button>
+                <button
+                  onClick={() => setViewMode('list')}
+                  className={`skills-view-btn ${viewMode === 'list' ? 'active' : ''}`}
+                  title="List view"
+                >
+                  <List size={15} />
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
-        <button onClick={onCreateSkill} className="btn btn-primary btn-sm">
-          <Plus size={14} />
-          New skill
-        </button>
       </div>
 
       {/* Content */}
-      <div className="flex-1 overflow-y-auto">
-        {loading ? (
-          <div className="flex items-center justify-center h-64 text-[var(--text-muted)] text-sm">
-            Loading...
-          </div>
-        ) : formattedSkills.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-full text-[var(--text-muted)] py-20">
-            <div className="w-16 h-16 rounded-2xl bg-[var(--bg-surface)] border border-[var(--border)] flex items-center justify-center mb-5">
-              <FolderOpen size={28} className="opacity-30" strokeWidth={1.5} />
-            </div>
-            <p className="text-sm font-medium mb-1">No skills yet</p>
-            <p className="text-xs text-[var(--text-muted)] mb-6">Create your first skill to get started</p>
-            <button onClick={onCreateSkill} className="btn btn-secondary btn-sm">
-              <Plus size={14} />
-              Create your first skill
-            </button>
-          </div>
-        ) : (
-          <div>
-            {formattedSkills.map((skill, index) => (
-              <motion.div
-                key={skill.name}
-                variants={itemVariants}
-                initial="hidden"
-                animate="visible"
-                transition={{ delay: index * 0.03, duration: 0.2 }}
-                className="list-item group"
-              >
-                <div className="list-item-icon">
-                  <FileText size={18} className="text-[var(--text-muted)]" strokeWidth={1.5} />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="text-sm font-semibold text-[var(--text)] truncate">{skill.name}</div>
-                  <div className="flex items-center gap-4 text-xs text-[var(--text-muted)] mt-1">
-                    <span className="flex items-center gap-1">
-                      <Clock size={12} />
-                      {skill.formattedDate}
-                    </span>
-                    <span className="flex items-center gap-1">
-                      <HardDrive size={12} />
-                      {skill.formattedSize}
-                    </span>
-                  </div>
-                </div>
-                <ChevronRight size={16} className="text-[var(--text-muted)] opacity-0 group-hover:opacity-100 transition-opacity" />
-              </motion.div>
-            ))}
-          </div>
-        )}
+      <div className="skills-content">
+        <AnimatePresence mode="wait">
+          {loading ? (
+            <motion.div
+              key="loading"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="skills-empty"
+            >
+              <div className="skills-empty-icon">
+                <FileText size={36} strokeWidth={1.5} />
+              </div>
+              <p className="skills-empty-title">Loading skills...</p>
+            </motion.div>
+          ) : filteredSkills.length === 0 ? (
+            <motion.div
+              key="empty"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              className="skills-empty"
+            >
+              <div className="skills-empty-icon">
+                {searchQuery ? <Search size={36} strokeWidth={1.5} /> : <FolderOpen size={36} strokeWidth={1.5} />}
+              </div>
+              <p className="skills-empty-title">
+                {searchQuery ? 'No matching skills' : 'No skills yet'}
+              </p>
+              <p className="skills-empty-desc">
+                {searchQuery
+                  ? 'Try a different search term or clear the search.'
+                  : 'Create your first skill to get started with AI-powered workflows.'
+                }
+              </p>
+              {!searchQuery && (
+                <button onClick={onCreateSkill} className="btn btn-primary">
+                  <Plus size={16} />
+                  Create First Skill
+                </button>
+              )}
+            </motion.div>
+          ) : (
+            <motion.div
+              key={viewMode}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className={viewMode === 'grid' ? 'skills-grid' : 'skills-list'}
+            >
+              {filteredSkills.map((skill, index) => (
+                <motion.div
+                  key={skill.name}
+                  variants={cardVariants}
+                  initial="hidden"
+                  animate="visible"
+                  transition={{
+                    delay: index * 0.04,
+                    duration: 0.35,
+                    ease: [0.4, 0, 0.2, 1]
+                  }}
+                  className={viewMode === 'grid' ? 'skill-card' : 'skill-list-item'}
+                >
+                  {viewMode === 'grid' ? (
+                    <>
+                      <div className="skill-card-header">
+                        <div className="skill-card-icon">
+                          <FileText size={20} strokeWidth={1.5} />
+                        </div>
+                        <div>
+                          <div className="skill-card-title">{skill.name}</div>
+                          <div className="skill-card-meta">
+                            <span className="skill-card-meta-item">
+                              <Clock size={12} />
+                              {skill.formattedDate}
+                            </span>
+                            <span className="skill-card-meta-item">
+                              <HardDrive size={12} />
+                              {skill.formattedSize}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="skill-card-arrow">
+                        <ArrowRight size={16} />
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <div className="skill-list-icon">
+                        <FileText size={18} strokeWidth={1.5} />
+                      </div>
+                      <div className="skill-list-content">
+                        <div className="skill-list-title">{skill.name}</div>
+                        <div className="skill-list-meta">
+                          <span className="skill-list-meta-item">
+                            <Clock size={12} />
+                            {skill.formattedDate}
+                          </span>
+                          <span className="skill-list-meta-item">
+                            <HardDrive size={12} />
+                            {skill.formattedSize}
+                          </span>
+                        </div>
+                      </div>
+                      <ArrowRight size={16} className="skill-list-arrow" />
+                    </>
+                  )}
+                </motion.div>
+              ))}
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </div>
   )
